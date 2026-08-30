@@ -3,7 +3,8 @@ name: Build Pro Browser APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -13,47 +14,84 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # -----------------------------
+      # 1. Checkout repository
+      # -----------------------------
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract project
+      # -----------------------------
+      # 2. Extract Pro Browser
+      # -----------------------------
+      - name: Extract Pro Browser archive
+        shell: bash
         run: |
+          set -e
+
           rm -rf project
-          mkdir project
+          mkdir -p project
+
           tar -xzf probrowser-v2.tar.gz -C project
 
-          echo "=== PROJECT ==="
-          find project -maxdepth 5 -type f | sort | head -200
+          echo "===== EXTRACTED PROJECT ====="
+          find project -maxdepth 5 -type f | sort | head -250
 
+      # -----------------------------
+      # 3. Detect existing Android project
+      # -----------------------------
       - name: Detect Android project
         id: android
+        shell: bash
         run: |
           GRADLEW="$(find project -type f -name gradlew -print -quit)"
 
           if [ -n "$GRADLEW" ]; then
             echo "found=true" >> "$GITHUB_OUTPUT"
             echo "gradlew=$GRADLEW" >> "$GITHUB_OUTPUT"
+
+            echo "Android Gradle project found:"
+            echo "$GRADLEW"
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "No Android project found."
+            echo "No Android Gradle wrapper found."
           fi
 
-      - name: Setup Java
+      # =========================================================
+      # EXISTING ANDROID PROJECT PATH
+      # =========================================================
+
+      - name: Setup Java 21 for existing Android project
         if: steps.android.outputs.found == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
-      - name: Build Android project
+      - name: Verify Java 21
         if: steps.android.outputs.found == 'true'
         run: |
+          java -version
+          javac -version
+
+      - name: Build existing Android project
+        if: steps.android.outputs.found == 'true'
+        shell: bash
+        run: |
+          set -e
+
           GRADLEW="${{ steps.android.outputs.gradlew }}"
+
           chmod +x "$GRADLEW"
+
           cd "$(dirname "$GRADLEW")"
+
           ./gradlew assembleDebug --stacktrace
 
-      - name: Setup Node
+      # =========================================================
+      # WEB APP -> CAPACITOR ANDROID
+      # =========================================================
+
+      - name: Setup Node.js
         if: steps.android.outputs.found != 'true'
         uses: actions/setup-node@v4
         with:
@@ -62,77 +100,135 @@ jobs:
       - name: Find web project
         if: steps.android.outputs.found != 'true'
         id: web
+        shell: bash
         run: |
-          PKG="$(find project -type f -name package.json \
-            -not -path '*/node_modules/*' -print -quit)"
+          set -e
+
+          PKG="$(find project \
+            -type f \
+            -name package.json \
+            -not -path '*/node_modules/*' \
+            -print \
+            -quit)"
 
           if [ -n "$PKG" ]; then
             ROOT="$(dirname "$PKG")"
+            echo "has_package=true" >> "$GITHUB_OUTPUT"
           else
             ROOT="project"
+            echo "has_package=false" >> "$GITHUB_OUTPUT"
           fi
 
           echo "root=$ROOT" >> "$GITHUB_OUTPUT"
-          echo "Web root: $ROOT"
 
-      - name: Install dependencies
+          echo "Web project root:"
+          echo "$ROOT"
+
+      - name: Install web dependencies
         if: steps.android.outputs.found != 'true'
+        shell: bash
         run: |
-          cd "${{ steps.web.outputs.root }}"
+          set -e
+
+          ROOT="${{ steps.web.outputs.root }}"
+
+          cd "$ROOT"
 
           if [ -f package-lock.json ]; then
             npm ci
           elif [ -f package.json ]; then
             npm install
+          else
+            echo "No package.json found."
           fi
 
-      - name: Build website
+      - name: Build web app
         if: steps.android.outputs.found != 'true'
+        shell: bash
         run: |
-          cd "${{ steps.web.outputs.root }}"
+          set -e
 
-          if [ -f package.json ] && \
-             node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)"
-          then
-            npm run build
+          ROOT="${{ steps.web.outputs.root }}"
+
+          cd "$ROOT"
+
+          if [ -f package.json ]; then
+            if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)"
+            then
+              npm run build
+            else
+              echo "No build script found. Using existing web files."
+            fi
           fi
 
-      - name: Prepare web files
+      # -----------------------------
+      # 7. Prepare web assets
+      # -----------------------------
+      - name: Prepare Capacitor web assets
         if: steps.android.outputs.found != 'true'
+        shell: bash
         run: |
+          set -e
+
           ROOT="${{ steps.web.outputs.root }}"
 
           mkdir -p capacitor-app/www
 
           if [ -f "$ROOT/dist/index.html" ]; then
+
+            echo "Using dist/"
             cp -a "$ROOT/dist/." capacitor-app/www/
 
           elif [ -f "$ROOT/build/index.html" ]; then
+
+            echo "Using build/"
             cp -a "$ROOT/build/." capacitor-app/www/
 
           elif [ -f "$ROOT/index.html" ]; then
+
+            echo "Using project root"
             find "$ROOT" -mindepth 1 -maxdepth 1 \
               ! -name node_modules \
               ! -name .git \
               -exec cp -a {} capacitor-app/www/ \;
 
           elif [ -f "$ROOT/public/index.html" ]; then
+
+            echo "Using public/"
             cp -a "$ROOT/public/." capacitor-app/www/
 
           else
+
             echo "ERROR: index.html not found."
-            find project -name index.html -print
+
+            echo "Available index.html files:"
+            find project -type f -name index.html -print
+
             exit 1
+
           fi
 
           test -f capacitor-app/www/index.html
 
-      - name: Create Android wrapper
+          echo "===== WEB ASSETS ====="
+          find capacitor-app/www -maxdepth 4 -type f | sort | head -250
+
+      # -----------------------------
+      # 8. Create Capacitor project
+      # -----------------------------
+      - name: Create Capacitor Android project
         if: steps.android.outputs.found != 'true'
         working-directory: capacitor-app
+        shell: bash
         run: |
+          set -e
+
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+
+          npm install \
+            @capacitor/core \
+            @capacitor/cli \
+            @capacitor/android
 
           npx cap init \
             "Pro Browser" \
@@ -140,23 +236,55 @@ jobs:
             --web-dir www
 
           npx cap add android
+
           npx cap sync android
 
-      - name: Setup Java
+      # -----------------------------
+      # 9. Java 21 for Capacitor
+      # -----------------------------
+      - name: Setup Java 21 for Capacitor
         if: steps.android.outputs.found != 'true'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
-      - name: Build APK
+      - name: Verify Capacitor Java 21
+        if: steps.android.outputs.found != 'true'
+        run: |
+          java -version
+          javac -version
+
+      # -----------------------------
+      # 10. Build Capacitor APK
+      # -----------------------------
+      - name: Build Pro Browser APK
         if: steps.android.outputs.found != 'true'
         working-directory: capacitor-app/android
+        shell: bash
         run: |
+          set -e
+
           chmod +x gradlew
+
           ./gradlew assembleDebug --stacktrace
 
-      - name: Upload APK
+      # -----------------------------
+      # 11. Locate APK
+      # -----------------------------
+      - name: Locate APK
+        shell: bash
+        run: |
+          echo "===== APK FILES ====="
+          find . \
+            -type f \
+            -name "*.apk" \
+            -print
+
+      # -----------------------------
+      # 12. Upload APK
+      # -----------------------------
+      - name: Upload Pro Browser APK
         uses: actions/upload-artifact@v4
         with:
           name: ProBrowser-debug-apk
