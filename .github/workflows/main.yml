@@ -1,54 +1,32 @@
-name: Build Pro Browser APK
+name: Inspect Pro Browser
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
-  build:
+  inspect:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract project
+      - name: Extract archive
         run: |
           mkdir -p project
           tar -xzf probrowser-v2.tar.gz -C project
-          echo "Extracted project:"
-          find project -maxdepth 3 -type f | head -100
 
-      - name: Find Android project
+      - name: Show project structure
         run: |
-          echo "Searching for Gradle project..."
-          find project -name gradlew -type f -print
+          echo "===== PROJECT FILES ====="
+          find project -maxdepth 5 -type f | sort
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+          echo "===== GRADLE WRAPPER ====="
+          find project -type f -name "gradlew" -print
 
-      - name: Make Gradle executable
-        run: |
-          chmod +x $(find project -name gradlew -type f | head -1)
-
-      - name: Build APK
-        run: |
-          GRADLEW=$(find project -name gradlew -type f | head -1)
-          cd "$(dirname "$GRADLEW")"
-          ./gradlew assembleDebug --stacktrace
-
-      - name: Find APK
-        run: |
-          find project -type f -name "*.apk" -print
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ProBrowser-debug-apk
-          path: project/**/build/outputs/apk/**/*.apk
-          if-no-files-found: error
+          echo "===== ANDROID FILES ====="
+          find project -type f \( \
+            -name "AndroidManifest.xml" -o \
+            -name "build.gradle" -o \
+            -name "build.gradle.kts" \
+          \) -print
