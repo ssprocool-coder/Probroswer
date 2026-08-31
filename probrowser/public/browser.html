@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Pro Browser</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    body { overflow: hidden; }
+    #webFrame { display:none; }
+    iframe#mainFrame { width:100%; height:100%; border:none; display:block; }
+  </style>
+</head>
+<body>
+<div class="browser-page">
+  <!-- Tab Bar -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-add-btn" id="newTabBtn" title="New tab">＋</button>
+  </div>
+
+  <!-- Address Bar -->
+  <div class="address-bar">
+    <button class="addr-btn" id="backBtn" title="Back" disabled>←</button>
+    <button class="addr-btn" id="fwdBtn" title="Forward" disabled>→</button>
+    <button class="addr-btn" id="reloadBtn" title="Reload">↺</button>
+    <div class="addr-input-wrap">
+      <input class="addr-input" id="addrInput" type="text" placeholder="Search or enter URL…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <button class="addr-btn" id="bookmarkBtn" title="Bookmark">🔖</button>
+    <button class="addr-btn" id="menuBtn" title="Menu">⋮</button>
+  </div>
+
+  <!-- Web Frame -->
+  <div class="web-frame" id="webFrame">
+    <div id="frameContainer" style="width:100%;height:100%;background:#fff;position:relative;">
+      <div id="noPageMsg">
+        <div style="font-size:3rem">🌐</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text-secondary)">Pro Browser</div>
+        <div style="font-size:.875rem;color:var(--text-muted)">Enter a URL or search above</div>
+        <button onclick="window.location.href='/'" style="margin-top:12px;padding:9px 22px;background:var(--accent);color:#fff;border-radius:99px;font-weight:600;font-size:.875rem;">Go Home</button>
+      </div>
+      <iframe id="mainFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="bottom-nav__btn" id="homeBtn"><span class="icon">🏠</span><span>Home</span></button>
+    <button class="bottom-nav__btn" id="searchNavBtn"><span class="icon">🔍</span><span>Search</span></button>
+    <button class="bottom-nav__btn" id="newTabNavBtn"><span class="icon">＋</span><span>New Tab</span></button>
+    <button class="bottom-nav__btn" id="tabsBtn" style="position:relative">
+      <span class="icon">⧉</span><span>Tabs</span>
+      <span class="tab-count-badge" id="tabCountBadge">1</span>
+    </button>
+    <button class="bottom-nav__btn" id="moreBtn"><span class="icon">⋮</span><span>More</span></button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="browser.js"></script>
+</body>
+</html>

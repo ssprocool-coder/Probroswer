@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Browser — Bookmarks</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<div class="bookmarks-page">
+  <div class="bookmarks-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="/" style="text-decoration:none;font-size:1.1rem;color:var(--text-primary)">←</a>
+      <span style="font-size:1.1rem;font-weight:700">Bookmarks</span>
+    </div>
+  </div>
+
+  <div style="padding:0 16px 8px">
+    <input class="form-input" id="bmSearch" placeholder="Search bookmarks…" oninput="renderBookmarks(this.value)"/>
+  </div>
+
+  <div class="bookmarks-list" id="bookmarksList"></div>
+</div>
+
+<script src="app.js"></script>
+<script src="bookmarks.js"></script>
+</body>
+</html>

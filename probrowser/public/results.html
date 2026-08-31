@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Browser — Results</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div class="results-header">
+  <div class="results-header__top">
+    <a class="results-logo" href="/">Pro<span>.</span>Browser</a>
+    <div class="results-search-wrap">
+      <div class="search-wrap">
+        <div class="search-bar" style="padding:0">
+          <span class="search-bar__icon" style="padding:0 8px 0 12px">🔍</span>
+          <input class="search-bar__input" id="searchInput" type="search" autocomplete="off" autocorrect="off" spellcheck="false"/>
+          <button class="search-bar__btn" id="searchBtn" style="margin:3px">Go</button>
+        </div>
+        <div class="suggestions-dropdown hidden" id="suggestDropdown"></div>
+      </div>
+    </div>
+    <div class="results-header__controls">
+      <button class="results-icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+      <button class="results-icon-btn" id="menuBtn" title="Menu">⋮</button>
+    </div>
+  </div>
+  <div style="padding:0 12px">
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-tab active" data-cat="all">All</button>
+      <button class="cat-tab" data-cat="images">Images</button>
+      <button class="cat-tab" data-cat="videos">Videos</button>
+      <button class="cat-tab" data-cat="news">News</button>
+      <button class="cat-tab" data-cat="maps">Maps</button>
+    </div>
+  </div>
+</div>
+
+<div id="appBody" style="padding-top:4px">
+  <div class="loading-wrap"><div class="spinner"></div></div>
+</div>
+
+<script src="app.js"></script>
+<script src="results.js"></script>
+</body>
+</html>

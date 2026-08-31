@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Browser</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>"/>
+</head>
+<body>
+
+<main class="home-page">
+  <!-- Top bar -->
+  <div class="home-topbar">
+    <div class="home-topbar__left">
+      <div class="home-topbar__mode" id="modeBadge" onclick="window.location.href='/settings?tab=mode'">Normal</div>
+    </div>
+    <div class="home-topbar__right">
+      <button class="home-icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+      <button class="home-icon-btn" id="bookmarksBtn" title="Bookmarks" onclick="window.location.href='/bookmarks'">🔖</button>
+      <button class="home-icon-btn" id="menuBtn" title="Menu">⋮</button>
+    </div>
+  </div>
+
+  <!-- Brand -->
+  <div class="home-brand">
+    <div class="home-brand__name">Pro<span class="home-brand__dot">.</span>Browser</div>
+    <div class="home-brand__tag">Fast · Private · Yours</div>
+  </div>
+
+  <!-- Search -->
+  <div class="home-search-area">
+    <div class="search-wrap">
+      <div class="search-bar">
+        <span class="search-bar__icon">🔍</span>
+        <input class="search-bar__input" id="searchInput" type="search"
+          placeholder="Search or enter URL…" autocomplete="off" autocorrect="off"
+          spellcheck="false" autofocus/>
+        <button class="search-bar__btn" id="searchBtn">Search</button>
+      </div>
+      <div class="suggestions-dropdown hidden" id="suggestDropdown"></div>
+    </div>
+  </div>
+
+  <!-- Shortcuts -->
+  <div class="shortcuts-section">
+    <div class="shortcuts-section__label">Quick Access</div>
+    <div class="shortcuts-row" id="shortcutsRow"></div>
+  </div>
+
+  <!-- Recently Visited -->
+  <div class="recent-section" id="recentSection">
+    <div class="section-label">Recently Visited</div>
+    <div class="recent-list" id="recentList"></div>
+  </div>
+
+  <!-- Discovery Feed -->
+  <div class="feed-section">
+    <div class="section-label">Discovery</div>
+    <div class="feed-grid" id="feedGrid"></div>
+  </div>
+</main>
+
+<!-- Shortcut Modal -->
+<div class="modal-overlay hidden" id="shortcutModal">
+  <div class="modal">
+    <div class="modal__handle"></div>
+    <div class="modal__title" id="scModalTitle">Add Shortcut</div>
+    <input type="hidden" id="scEditId"/>
+    <div class="form-row">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="scName" placeholder="e.g. Wikipedia"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">URL</label>
+      <input class="form-input" id="scUrl" placeholder="https://…" type="url"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Icon (emoji)</label>
+      <input class="form-input" id="scEmoji" placeholder="🌐" style="width:80px"/>
+    </div>
+    <div class="modal__actions">
+      <button class="btn btn-secondary" onclick="closeShortcutModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveShortcutModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

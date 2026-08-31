@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Browser — Settings</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<div class="settings-page">
+  <div class="settings-header">
+    <a href="/" class="settings-header__back">←</a>
+    <span class="settings-header__title">Settings</span>
+  </div>
+
+  <!-- Browser Mode -->
+  <div class="settings-section">
+    <div class="settings-section__title">Browser Mode</div>
+    <div class="settings-row settings-row--stack">
+      <div class="mode-btns" id="modeBtns">
+        <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">
+          <span class="mode-btn__icon">🌐</span>Normal
+          <span class="mode-btn__desc">Standard browsing experience</span>
+        </button>
+        <button class="mode-btn" data-mode="private" onclick="setMode('private')">
+          <span class="mode-btn__icon">🔒</span>Private
+          <span class="mode-btn__desc">Enhanced privacy, minimal history</span>
+        </button>
+        <button class="mode-btn" data-mode="child" onclick="setMode('child')">
+          <span class="mode-btn__icon">⭐</span>Child
+          <span class="mode-btn__desc">Safer, simplified experience</span>
+        </button>
+        <button class="mode-btn" data-mode="developer" onclick="setMode('developer')">
+          <span class="mode-btn__icon">⚙️</span>Developer
+          <span class="mode-btn__desc">Technical tools &amp; info</span>
+        </button>
+      </div>
+      <div id="modeNote" style="font-size:.78rem;color:var(--text-muted);margin-top:8px;padding:8px 10px;background:var(--surface-2);border-radius:var(--radius-sm)"></div>
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="settings-section">
+    <div class="settings-section__title">Security &amp; Privacy</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row__label">Security Level</div>
+        <div class="settings-row__sub">Controls tracker blocking and request filtering</div>
+      </div>
+      <div class="security-btns">
+        <button class="sec-btn active" data-sec="basic" onclick="setSec('basic')">Basic</button>
+        <button class="sec-btn" data-sec="balanced" onclick="setSec('balanced')">Balanced</button>
+        <button class="sec-btn" data-sec="strict" onclick="setSec('strict')">Strict</button>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Save Search History</div></div>
+      <button class="toggle on" id="searchHistToggle" onclick="toggleSetting('saveSearchHist',this)"></button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Save Browsing History</div></div>
+      <button class="toggle on" id="browseHistToggle" onclick="toggleSetting('saveBrowseHist',this)"></button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Clear Search History</div></div>
+      <button class="btn btn-secondary" onclick="clearSearchHist()">Clear</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Clear Browsing History</div></div>
+      <button class="btn btn-secondary" onclick="clearBrowseHist()">Clear</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Clear All Data</div><div class="settings-row__sub">History, bookmarks, downloads, settings</div></div>
+      <button class="btn btn-danger" onclick="clearAllData()">Clear All</button>
+    </div>
+  </div>
+
+  <!-- Appearance -->
+  <div class="settings-section">
+    <div class="settings-section__title">Appearance</div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Dark Mode</div></div>
+      <button class="toggle" id="darkModeToggle" onclick="toggleDark()"></button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="settings-section">
+    <div class="settings-section__title">Search</div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Results per Page</div></div>
+      <select class="form-input" id="resultsPerPage" style="width:80px">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+      </select>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Search Suggestions</div></div>
+      <button class="toggle on" id="suggestToggle" onclick="toggleSetting('suggestions',this)"></button>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="settings-section">
+    <div class="settings-section__title">AI Overview</div>
+    <div class="settings-row settings-row--stack">
+      <div><div class="settings-row__label">AI Provider</div><div class="settings-row__sub">Core search works without AI.</div></div>
+      <select class="form-input" id="aiProvider" style="width:100%;margin-top:8px">
+        <option value="none">None (disabled)</option>
+        <option value="ollama">Local — Ollama</option>
+        <option value="openai">OpenAI-compatible API</option>
+      </select>
+    </div>
+    <div id="aiOllamaFields" style="display:none">
+      <div class="settings-row settings-row--stack">
+        <div class="settings-row__label">Ollama Endpoint</div>
+        <input class="form-input" id="aiEndpoint" placeholder="http://localhost:11434" style="margin-top:6px"/>
+      </div>
+      <div class="settings-row settings-row--stack">
+        <div class="settings-row__label">Model Name</div>
+        <input class="form-input" id="aiModel" placeholder="llama3" style="margin-top:6px"/>
+      </div>
+    </div>
+    <div id="aiOpenAIFields" style="display:none">
+      <div class="settings-row settings-row--stack">
+        <div class="settings-row__label">API Endpoint</div>
+        <input class="form-input" id="aiEndpointOAI" placeholder="https://api.openai.com/v1" style="margin-top:6px"/>
+      </div>
+      <div class="settings-row settings-row--stack">
+        <div class="settings-row__label">Model</div>
+        <input class="form-input" id="aiModelOAI" placeholder="gpt-3.5-turbo" style="margin-top:6px"/>
+      </div>
+      <div class="settings-row settings-row--stack">
+        <div class="settings-row__label">API Key</div>
+        <input class="form-input" id="aiApiKey" type="password" placeholder="sk-…" style="margin-top:6px"/>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div></div>
+      <button class="btn btn-primary" onclick="saveAI()">Save AI Settings</button>
+    </div>
+  </div>
+
+  <!-- Index -->
+  <div class="settings-section">
+    <div class="settings-section__title">Index</div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Admin Dashboard</div></div>
+      <a href="/admin" class="btn btn-secondary" style="text-decoration:none">Open Admin</a>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-row__label">Reset Index</div><div class="settings-row__sub">Delete all crawled pages</div></div>
+      <button class="btn btn-danger" onclick="resetIdx()">Reset</button>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="settings-section">
+    <div class="settings-section__title">About</div>
+    <div class="settings-row"><div><div class="settings-row__label">Pro Browser</div><div class="settings-row__sub">Version 2.0 — Private local search engine &amp; browser</div></div></div>
+    <div class="settings-row"><div><div class="settings-row__label">Platform</div><div class="settings-row__sub">Node.js + Express · Android / Termux / Linux</div></div></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

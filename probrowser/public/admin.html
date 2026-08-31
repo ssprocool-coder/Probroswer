@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Browser — Admin</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle">🌙</button>
+
+<div class="admin-page">
+  <div class="admin-header">
+    <div class="admin-title">⚙️ Admin Panel</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="/" class="btn btn-secondary" style="text-decoration:none">← Back</a>
+      <button class="btn btn-danger" id="resetBtn">🗑 Reset Index</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-card__label">Pages</div><div class="stat-card__value" id="statPages">—</div></div>
+    <div class="stat-card"><div class="stat-card__label">Domains</div><div class="stat-card__value" id="statDomains">—</div></div>
+    <div class="stat-card"><div class="stat-card__label">Images</div><div class="stat-card__value" id="statImages">—</div></div>
+    <div class="stat-card"><div class="stat-card__label">Videos</div><div class="stat-card__value" id="statVideos">—</div></div>
+  </div>
+
+  <!-- Crawl Panel -->
+  <div class="crawl-panel">
+    <div class="crawl-panel__title">🕷 Crawl a Website</div>
+    <div class="form-row">
+      <label class="form-label">Website URL</label>
+      <input class="form-input" id="crawlUrl" type="url" placeholder="https://example.com"/>
+    </div>
+    <div class="form-row-inline">
+      <div class="form-row" style="flex:1">
+        <label class="form-label">Max Pages</label>
+        <input class="form-input" id="crawlMaxPages" type="number" value="50" min="1" max="500"/>
+      </div>
+      <div class="form-row" style="flex:1">
+        <label class="form-label">Max Depth</label>
+        <input class="form-input" id="crawlMaxDepth" type="number" value="2" min="0" max="10"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-check">
+        <input type="checkbox" id="sameDomain" checked/>
+        Stay on same domain only
+      </label>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <button class="btn btn-primary" id="startCrawlBtn">▶ Start Crawl</button>
+      <button class="btn btn-secondary" id="stopCrawlBtn" disabled>■ Stop</button>
+    </div>
+    <div class="crawl-status idle" id="crawlStatus">Status: idle</div>
+  </div>
+
+  <!-- Pages Table -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="font-weight:700">Indexed Pages</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" id="prevPageBtn" disabled>← Prev</button>
+      <span id="pageInfo" style="align-self:center;font-size:.85rem;color:var(--text-muted)">Page 1</span>
+      <button class="btn btn-secondary" id="nextPageBtn">Next →</button>
+    </div>
+  </div>
+  <div class="pages-table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Domain</th><th>Crawled</th><th></th></tr></thead>
+      <tbody id="pagesTableBody"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px">Loading…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- Sessions -->
+  <div style="margin-top:24px;font-weight:700;margin-bottom:10px">Crawl Sessions</div>
+  <div class="pages-table-wrap">
+    <table>
+      <thead><tr><th>Seed URL</th><th>Status</th><th>Pages</th><th>Started</th></tr></thead>
+      <tbody id="sessionsTableBody"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

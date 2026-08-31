@@ -1,0 +1,8 @@
+node_modules/
+data/novasearch.json
+data/ai-config.json
+*.tmp
+*.log
+android/.gradle/
+android/build/
+android/app/build/
