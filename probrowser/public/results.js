@@ -68,7 +68,7 @@ async function loadResults() {
 
   // All / news
   try {
-    const r = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(currentQuery)}&page=${currentPage}`);
+    const r = await fetch(`http://127.0.0.1:3000/api/search?q=${encodeURIComponent(currentQuery)}&page=${currentPage}`);
     const data = await r.json();
     if (currentCat === 'news') renderNews(data);
     else renderAll(data);
@@ -132,7 +132,7 @@ async function loadAIOverview() {
   const area = document.getElementById('aiOverviewArea');
   if (!area || !currentQuery) return;
   try {
-    const r = await fetch(`/api/ai/overview?q=${encodeURIComponent(currentQuery)}`);
+    const r = await fetch(`http://127.0.0.1:3000/api/ai/overview?q=${encodeURIComponent(currentQuery)}`);
     const data = await r.json();
     if (data.unavailable) {
       // Silently skip if not configured
@@ -153,7 +153,7 @@ async function loadAIOverview() {
 
 async function loadImages() {
   try {
-    const r = await fetch(`/api/search/images?q=${encodeURIComponent(currentQuery)}`);
+    const r = await fetch(`http://127.0.0.1:3000/api/search/images?q=${encodeURIComponent(currentQuery)}`);
     const data = await r.json();
     if (!data.results?.length) {
       body.innerHTML = `<div class="empty-state" style="padding:40px"><div class="empty-state__icon">🖼️</div><div class="empty-state__title">No images indexed</div><div class="empty-state__msg">Crawl websites to discover images.</div></div>`;
@@ -176,7 +176,7 @@ async function loadImages() {
 
 async function loadVideos() {
   try {
-    const r = await fetch(`/api/search/videos?q=${encodeURIComponent(currentQuery)}`);
+    const r = await fetch(`http://127.0.0.1:3000/api/search/videos?q=${encodeURIComponent(currentQuery)}`);
     const data = await r.json();
     if (!data.results?.length) {
       body.innerHTML = `<div class="empty-state" style="padding:40px"><div class="empty-state__icon">▶️</div><div class="empty-state__title">No videos indexed</div><div class="empty-state__msg">Crawl websites with YouTube/Vimeo embeds to discover videos.</div></div>`;
