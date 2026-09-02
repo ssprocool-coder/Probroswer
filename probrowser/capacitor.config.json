@@ -1,0 +1,8 @@
+{
+	"appId": "com.ssprocool.probrowser",
+	"appName": "Pro Browser",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "http"
+	}
+}
